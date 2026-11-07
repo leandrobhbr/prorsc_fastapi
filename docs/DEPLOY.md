@@ -143,6 +143,8 @@ Para publicar em `https://exemplo.com.br/prorsc_fastapi/`, num domínio que já 
 
 1. No `/etc/prorsc-fastapi.env`, **antes do build do frontend** (seção 3):
    ```ini
+   # Opcional: publicar o front dentro da pasta do site (padrão: /var/www/prorsc-fastapi)
+   FRONT_DIR=/var/www/html/exemplo/prorsc_fastapi
    FRONT_PUBLIC_PATH=/prorsc_fastapi/
    FRONT_API_URL=/prorsc_fastapi/api/v1
    # Swagger em /prorsc_fastapi/api/docs:
@@ -154,6 +156,8 @@ Para publicar em `https://exemplo.com.br/prorsc_fastapi/`, num domínio que já 
    sudo mkdir -p /etc/apache2/prorsc
    sudo cp /opt/prorsc-fastapi/deploy/apache/prorsc-fastapi-subpasta.conf /etc/apache2/prorsc/
    ```
+   Se mudou o `FRONT_DIR`, ajuste o caminho no arquivo copiado:
+   `sudo sed -i 's#/var/www/prorsc-fastapi#/var/www/html/exemplo/prorsc_fastapi#g' /etc/apache2/prorsc/prorsc-fastapi-subpasta.conf`
 3. Dentro do `<VirtualHost *:443>` do domínio, adicione **uma vez** a linha:
    ```apache
    IncludeOptional /etc/apache2/prorsc/*.conf
