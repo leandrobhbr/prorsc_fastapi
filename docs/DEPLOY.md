@@ -70,7 +70,8 @@ sudo install -d -o prorsc -g prorsc -m 750 /var/lib/prorsc-fastapi
 ```bash
 sudo tee /etc/cron.daily/prorsc-fastapi-backup > /dev/null <<'EOF'
 #!/bin/sh
-sqlite3 /var/lib/prorsc-fastapi/prorsc.db ".backup '/var/lib/prorsc-fastapi/backup-diario.db'"
+# Roda como o usuário do serviço, para não criar arquivos do banco com dono root.
+runuser -u prorsc -- sqlite3 /var/lib/prorsc-fastapi/prorsc.db ".backup '/var/lib/prorsc-fastapi/backup-diario.db'"
 EOF
 sudo chmod +x /etc/cron.daily/prorsc-fastapi-backup
 ```
@@ -206,7 +207,7 @@ sudo /opt/prorsc-fastapi/deploy/atualizar.sh v1.0.0
 ```
 
 Se a versão nova tinha migration que alterou tabelas, restaure antes o backup que o script
-mostrou (`cp backup-...db prorsc.db`) ou desfaça a migration com `alembic downgrade -1`.
+mostrou (com o serviço parado: `sudo -u prorsc cp backup-...db prorsc.db` e apague `prorsc.db-wal`/`prorsc.db-shm`) ou desfaça a migration com `alembic downgrade -1`.
 
 ## 7. Problemas comuns
 
