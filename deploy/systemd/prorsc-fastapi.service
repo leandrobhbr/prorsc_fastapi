@@ -1,0 +1,26 @@
+# Serviço systemd da Calculadora RSC-TAE (FastAPI + Gunicorn/Uvicorn).
+# Instalação: sudo cp deploy/systemd/prorsc-fastapi.service /etc/systemd/system/
+#             sudo systemctl daemon-reload && sudo systemctl enable --now prorsc-fastapi
+[Unit]
+Description=Calculadora RSC-TAE - backend FastAPI (Gunicorn + Uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=prorsc
+Group=prorsc
+WorkingDirectory=/opt/prorsc-fastapi/backend
+EnvironmentFile=/etc/prorsc-fastapi.env
+ExecStart=/opt/prorsc-fastapi/backend/.venv/bin/gunicorn --config gunicorn.conf.py app.main:app
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/prorsc-fastapi
+
+[Install]
+WantedBy=multi-user.target
